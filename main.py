@@ -1,7 +1,8 @@
 import cv2
 import keyboard
 import pyautogui
-
+import webbrowser
+import pytesseract
 
 def listen_key():
     keyboard.wait("alt gr+p")
@@ -10,7 +11,7 @@ def listen_key():
 def take_ss():
     pyautogui.screenshot().save('ss.png')
     show_img()
-    print("hello")
+
 
 def show_img():
     path = r'ss.png'
@@ -18,7 +19,7 @@ def show_img():
     duo_coordinates =[]
     img = cv2.imread(path)
     cv2.imshow('image', img)
-    
+
     def crop_img(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
 
@@ -38,7 +39,6 @@ def show_img():
                 duo_coordinates.append(coordinates[1])
 
                 coordinates.clear()
-
 
         if event == cv2.EVENT_RBUTTONDOWN:
             x1 = duo_coordinates[0][0]
@@ -63,12 +63,24 @@ def show_img():
                         except Exception as e:
                             print(e)
             duo_coordinates.clear()
+            text = text_recogner(croped_img)
+
+            search(text)
 
 
     cv2.setMouseCallback('image', crop_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+def text_recogner(image):
+    text =  pytesseract.image_to_string(image)
+    return text
+
+def search(query):
+    query = 'https://www.google.com/search?q='+str(query)
+    webbrowser.open_new_tab(query)
+
+
 if __name__ == "__main__":
-    show_img()
+    listen_key()
 
